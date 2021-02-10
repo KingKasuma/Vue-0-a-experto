@@ -4,9 +4,15 @@ export default createStore({
   state: {
   	contador : 150
   },  
-  mutations: {  	
+  mutations: {
+  	incrementar(state){
+  		state.contador = state.contador + 10
+  	}
   },
   actions: {
+  	accionIncrementar({commit}) {
+  		commit('incrementar')
+  	}
   },
   modules: {
   }
