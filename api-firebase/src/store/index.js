@@ -35,8 +35,23 @@ export default createStore({
     }
   },
   actions: {
-    cargarLocalStorage({commit}){
-      
+    async cargarLocalStorage({commit}){
+      try {
+        const res = await fetch('https://udemy-api-f38bf-default-rtdb.firebaseio.com/tareas.json')
+        const dataDB = await res.json()
+        const arrayTareas = []
+
+        for(let id in dataDB){          
+          arrayTareas.push(dataDB[id])
+        }
+
+        console.log(arrayTareas)
+        commit('cargar', arrayTareas)
+
+      } catch(e) {
+        // statements
+        console.log(e);
+      }
     },
   	async setTareas({commit}, tarea){
       try {
@@ -56,14 +71,34 @@ export default createStore({
       }
   		commit('set', tarea)
   	},
-  	deleteTareas({commit}, id){
-  		commit('eliminar', id)
+  	async deleteTareas({commit}, id){
+      try {
+        await fetch(`https://udemy-api-f38bf-default-rtdb.firebaseio.com/tareas/${id}.json`,{
+          method: 'DELETE'
+        })
+        commit('eliminar', id)
+      } catch(e) {
+        // statements
+        console.log(e);
+      }  		
   	},
   	setTarea({commit}, id){
   		commit('tarea', id)
   	},
-    updateTarea({commit}, tarea){
-      commit('update', tarea)
+    async updateTarea({commit}, tarea){
+      try {
+        const res = await fetch(`https://udemy-api-f38bf-default-rtdb.firebaseio.com/tareas/${tarea.id}.json`, {
+          method: 'PATCH',
+          body: JSON.stringify(tarea)
+        })
+        const dataDB = await res.json()
+
+        console.log(dataDB)
+        commit('update', dataDB)
+      } catch(e) {
+        // statements
+        console.log(e);
+      }      
     }
   },
   modules: {
