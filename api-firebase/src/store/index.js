@@ -17,12 +17,10 @@ export default createStore({
       state.tareas = payload;
     },
   	set(state, payload){
-  		state.tareas.push(payload)
-  		localStorage.setItem('tareas', JSON.stringify(state.tareas))
+  		state.tareas.push(payload)  		
   	},
   	eliminar(state, payload){
-  		state.tareas = state.tareas.filter(item => item.id !== payload)
-      localStorage.setItem('tareas', JSON.stringify(state.tareas))
+  		state.tareas = state.tareas.filter(item => item.id !== payload)      
   	},
   	tarea(state, payload){
       if(!state.tareas.find(item => item.id === payload)){
@@ -33,21 +31,29 @@ export default createStore({
   	},
     update(state, payload){
       state.tareas = state.tareas.map(item => item.id === payload.id ? payload : item)
-      router.push('/')
-      localStorage.setItem('tareas', JSON.stringify(state.tareas))
+      router.push('/')      
     }
   },
   actions: {
     cargarLocalStorage({commit}){
-      if(localStorage.getItem('tareas')){
-        const tareas = JSON.parse(localStorage.getItem('tareas'));
-        commit('cargar', tareas);
-        return
-      }
-
-      localStorage.setItem('tareas', JSON.stringify([]))
+      
     },
-  	setTareas({commit}, tarea){
+  	async setTareas({commit}, tarea){
+      try {
+        const res = await fetch(`https://udemy-api-f38bf-default-rtdb.firebaseio.com/tareas/${tarea.id}.json`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(tarea)
+        })
+
+        const dataDB = await res.json()
+        console.log(dataDB)
+
+      } catch(e) {        
+        console.log(e);
+      }
   		commit('set', tarea)
   	},
   	deleteTareas({commit}, id){
